@@ -42,12 +42,16 @@ app.get("/", authMiddleware, (c) => {
   return c.html(<Top />);
 });
 
+function sanitizeFileName(fileName: string) {
+  // Remove any invalid characters from the file name
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
 app.post("/upload", authMiddleware, async (c) => {
   const formData = await c.req.formData();
   const file = formData.get("file") as File;
   if (file) {
-    const fileName = file.name;
-    const fileSize = file.size;
+    const fileName = sanitizeFileName(file.name);
     // store in /data
     const uid = crypto.randomUUID();
     const slug = `${uid}-${fileName}`;
